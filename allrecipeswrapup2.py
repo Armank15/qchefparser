@@ -143,7 +143,6 @@ for p in range(1):
     # close connection to the web server
     sock.close()
     # parse read html
-    print html
     soup = BeautifulSoup(html, "html.parser")
 
     recipes = soup.find_all("a", attrs={'data-internal-referrer-link': "search result"})
@@ -168,7 +167,6 @@ with open("out.csv", "wb") as outfile:
 
 	for recipe in allrecipes :
 	    # open the web url
-	    print recipe
 	    sock = urllib.urlopen("http://allrecipes.com" + recipe)
 	    # read from the web server
 	    html = sock.read()
