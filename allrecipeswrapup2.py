@@ -145,7 +145,7 @@ for p in range(1):
     # parse read html
     soup = BeautifulSoup(html, "html.parser")
 
-    recipes = soup.find_all("a", attrs={'data-internal-referrer-link': "search result"})
+    recipes = soup.find_all("a", attrs={'data-internal-referrer-link': "hub recipe"})
 
     print recipes
     for r in recipes:  
