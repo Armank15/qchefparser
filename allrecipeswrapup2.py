@@ -5,7 +5,7 @@ import urllib
 import time 
 
 # These are some example websites
-allrecipesexample = "http://allrecipes.com/search/results/?wt=chicken&sort=re"
+allrecipesexample = "http://allrecipes.com/recipes/201/meat-and-poultry/chicken/?page="
 #"http://allrecipes.com/search/results/?wt=chicken&sort=re"
 
 
@@ -145,11 +145,12 @@ for p in range(1):
     # parse read html
     soup = BeautifulSoup(html, "html.parser")
 
-    recipes = soup.find_all("a", attrs={'data-internal-referrer-link': "hub recipe"})
+    recipes = soup.find_all("a")
+    # attrs={'data-internal-referrer-link': "hub recipe"})
 
     print recipes
     for r in recipes:  
-        if r['href'][:7] == "/recipe":
+        if "href" in r and r['href'][:7] == "/recipe" :
             if not r['href'] in allrecipes: 
                 allrecipes.append(r["href"])
                 print r["href"]
