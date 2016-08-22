@@ -9,7 +9,6 @@ allrecipesexample = "http://allrecipes.com/recipes/201/meat-and-poultry/chicken/
 #"http://allrecipes.com/search/results/?wt=chicken&sort=re"
 
 
-
 allrecipes = []
 
 
@@ -135,6 +134,7 @@ def getSteps(url) :
     print "UNKNOWN WEBSITE, PLEASE ADD!"
     return []
 
+
 for p in range(1):
     url = allrecipesexample + str(p + 1)
     sock = urllib.urlopen(url)
@@ -146,7 +146,7 @@ for p in range(1):
     soup = BeautifulSoup(html, "html.parser")
 
     recipes = soup.find_all("a")
-    # attrs={'data-internal-referrer-link': "hub recipe"})
+    attrs={'data-internal-referrer-link': "hub recipe"}
 
     print recipes
     for r in recipes:  
@@ -157,7 +157,7 @@ for p in range(1):
 
     time.sleep(0.5)
 
-print allrecipes
+
 
 
 with open("out.csv", "wb") as outfile:
@@ -184,5 +184,6 @@ with open("out.csv", "wb") as outfile:
 	    	"ingredients": getIngredients(soup),
 	    	"steps": getSteps(soup)
 	    })
+
 	    
 time.sleep(0.5)
