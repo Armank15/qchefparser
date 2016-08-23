@@ -24,7 +24,8 @@ def GetCategories(html) :
 	return allrecipes
 
 
-sock = urllib.urlopen(allrecipesexample)  
-html = sock.read()
-sock.close()
-GetCategories	(html)
+if __name__ == "__main__":
+    sock = urllib.urlopen(allrecipesexample)  
+    html = sock.read()
+    sock.close()
+    GetCategories(html)
