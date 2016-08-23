@@ -204,8 +204,7 @@ def GetCategories(html) :
 	return allrecipes
 
 
-if __name__ == "__main__":
-    sock = urllib.urlopen(allrecipesexample)  
-    html = sock.read()
-    sock.close()
-    GetCategories(html)
+sock = urllib.urlopen(allrecipesexample)  
+html = sock.read()
+sock.close()
+GetCategories	(html)
