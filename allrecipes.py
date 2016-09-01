@@ -207,4 +207,4 @@ def GetCategories(html) :
 sock = urllib.urlopen(allrecipesexample)  
 html = sock.read()
 sock.close()
-GetCategories	(html)
+GetCategories(html)
