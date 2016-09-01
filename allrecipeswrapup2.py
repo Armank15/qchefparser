@@ -5,7 +5,8 @@ import urllib
 import time 
 
 # These are some example websites
-allrecipesexample = "http://allrecipes.com/recipes/201/meat-and-poultry/chicken/?page="
+allrecipesexample = "http://allrecipes.com/recipes/88/bbq-grilling/#"
+#allrecipesexample = "http://allrecipes.com/recipes/201/meat-and-poultry/chicken/?page="
 #"http://allrecipes.com/search/results/?wt=chicken&sort=re"
 
 
@@ -134,56 +135,56 @@ def getSteps(url) :
     print "UNKNOWN WEBSITE, PLEASE ADD!"
     return []
 
+if __name__ == "__main__":
+    for p in range(1):
+        url = allrecipesexample + str(p + 1)
+        sock = urllib.urlopen(url)
+        # read from the web server
+        html = sock.read()
+        # close connection to the web server
+        sock.close()
+        # parse read html
+        soup = BeautifulSoup(html, "html.parser")
 
-for p in range(1):
-    url = allrecipesexample + str(p + 1)
-    sock = urllib.urlopen(url)
-    # read from the web server
-    html = sock.read()
-    # close connection to the web server
-    sock.close()
-    # parse read html
-    soup = BeautifulSoup(html, "html.parser")
+        recipes = soup.find_all("a")
+        attrs={'data-internal-referrer-link': "hub recipe"}
 
-    recipes = soup.find_all("a")
-    attrs={'data-internal-referrer-link': "hub recipe"}
+        print recipes
+        for r in recipes:  
+            if "href" in r and r['href'][:7] == "/recipe" :
+                if not r['href'] in allrecipes: 
+                    allrecipes.append(r["href"])
+                    print r["href"]
 
-    print recipes
-    for r in recipes:  
-        if "href" in r and r['href'][:7] == "/recipe" :
-            if not r['href'] in allrecipes: 
-                allrecipes.append(r["href"])
-                print r["href"]
-
-    time.sleep(0.5)
-
-
+        time.sleep(0.5)
 
 
-with open("out.csv", "wb") as outfile:
-	fieldnames = ["url", "name", "rating", "serving_size", "cooking_time", "ingredients", "steps"]
- 	writer = csv.DictWriter(outfile, fieldnames=fieldnames)
- 	writer.writeheader()
 
 
-	for recipe in allrecipes :
-	    # open the web url
-	    sock = urllib.urlopen("http://allrecipes.com" + recipe)
-	    # read from the web server
-	    html = sock.read()
-	    # close connection to the web server
-	    sock.close()
-	    # parse read html
-	    soup = BeautifulSoup(html, "html.parser")
-	    writer.writerow({
-	    	"url": "http://allrecipes.com" + recipe, 
-	    	"name": getName(soup), 
-	    	"rating": getRating(soup),
-	    	"serving_size": getServingSize(soup),
-	    	"cooking_time": getCookTime(soup),
-	    	"ingredients": getIngredients(soup),
-	    	"steps": getSteps(soup)
-	    })
+    with open("out.csv", "wb") as outfile:
+    	fieldnames = ["url", "name", "rating", "serving_size", "cooking_time", "ingredients", "steps"]
+     	writer = csv.DictWriter(outfile, fieldnames=fieldnames)
+     	writer.writeheader()
+
+
+    	for recipe in allrecipes :
+    	    # open the web url
+    	    sock = urllib.urlopen("http://allrecipes.com" + recipe)
+    	    # read from the web server
+    	    html = sock.read()
+    	    # close connection to the web server
+    	    sock.close()
+    	    # parse read html
+    	    soup = BeautifulSoup(html, "html.parser")
+    	    writer.writerow({
+    	    	"url": "http://allrecipes.com" + recipe, 
+    	    	"name": getName(soup), 
+    	    	"rating": getRating(soup),
+    	    	"serving_size": getServingSize(soup),
+    	    	"cooking_time": getCookTime(soup),
+    	    	"ingredients": getIngredients(soup),
+    	    	"steps": getSteps(soup)
+    	    })
 
 	    
-time.sleep(0.5)
+            time.sleep(0.5)
