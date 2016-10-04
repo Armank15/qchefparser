@@ -1,8 +1,6 @@
 from bs4 import BeautifulSoup
-import csv
-import sys
-import urllib
-import time 
+from fractions import Fraction
+import csv, sys, urllib, time 
 
 # These are some example websites
 allrecipesexample = "http://allrecipes.com/recipes/?grouping=all"
@@ -20,8 +18,37 @@ def getIngredientsAllRecipes(soup) :
 
 	combinedspan = spans + spans2
 	for ing in combinedspan:
-		results.append(ing.contents)
+		results.append(ing.contents[0])
 	return results
+
+def interpretIngredients(str) :
+
+    units = ['cups', 'teaspoons', 'teaspoon', 'cup', 'tablespoons', 'tablespoon', 'ounces', 'pound', 'pounds', 'ounce', 'cloves']
+
+    #setup
+    result = {}
+
+    a = str.split(" ")
+    result['quantity'] = ""
+    result['unit'] = ""
+    result['ingredient'] = ""
+
+    #Put the right stuff in these three variables    
+    unit_index = 0
+    while unit_index < len(a)-1 and a[unit_index] not in units:
+        unit_index += 1
+    result['quantity'] = " ".join(a[:unit_index])
+    result['unit'] = a[unit_index]
+    result["ingredient"] = " ".join(a[unit_index+1:])
+        
+    #Convert the qty using fraction
+    try :
+        result['quantity'] = float(Fraction(result['quantity']))
+    except :
+        print "  Error: I only handle floats, but I got",result['quantity'],"instead!"
+        return None
+    return result
+
 
 def getNameAllRecipes(soup) :
 	results = [ ]
@@ -31,7 +58,13 @@ def getNameAllRecipes(soup) :
 
 def getCookTimeAllRecipes(soup) :
 	CookTime = soup.find("span", class_="ready-in-time")
-	return CookTime.contents
+	if CookTime is not None:
+		return CookTime.contents
+	else:
+		return "-"
+
+
+	#soup.find()
 
 def getRatingAllRecipes(soup) : 
 
@@ -127,13 +160,13 @@ def getSteps(soup) :
     print "UNKNOWN WEBSITE, PLEASE ADD!"
     return []
 
-def getRecipes(parent, pages) :
+def getRecipes(parent, pages, startpage=0, debug=False) :
 
 
 	allrecipes = []
 
-	for p in range(pages):
-		url = parent + str(p + 1)
+	for p in range(startpage,startpage+pages):
+		url = parent + "&page=" + str(p + 1)
 		sock = urllib.urlopen(url)
 	    # read from the web server
 		html = sock.read()
@@ -144,7 +177,8 @@ def getRecipes(parent, pages) :
 
 		recipes = soup.find_all("a", attrs={'data-internal-referrer-link': "hub recipe"})
 
-		print recipes
+		if debug:
+			print recipes
 		for r in recipes: 
 			url = r.get("href") 
 			if url[:7] == "/recipe" :
@@ -154,7 +188,8 @@ def getRecipes(parent, pages) :
 
 		time.sleep(0.5)
 
-	print allrecipes
+	if debug:
+		print allrecipes
 
 
 	with open("out.csv", "wb") as outfile:
@@ -178,16 +213,14 @@ def getRecipes(parent, pages) :
 		    	"rating": getRating(soup),
 		    	"serving_size": getServingSize(soup),
 		    	"cooking_time": getCookTime(soup),
-		    	"ingredients": getIngredients(soup),
+		    	"ingredients": [interpretIngredients(ing) for ing in getIngredients(soup)],
 		    	"steps": getSteps(soup)
 		    })
 		    
 	time.sleep(0.5)
 
-
-getRecipes(allrecipesexample,1)
-
-
+#Can delete this
+'''
 def GetCategories(html) :
 	allrecipes = []
 	soup = BeautifulSoup(html, "html.parser")
@@ -202,9 +235,15 @@ def GetCategories(html) :
 	time.sleep(0.5)
 	print "\n".join(allrecipes)
 	return allrecipes
+'''
+#-----------------------------------------
 
+getRecipes(allrecipesexample,1, startpage=100)
 
+'''
+#Can delete this stuff
 sock = urllib.urlopen(allrecipesexample)  
 html = sock.read()
 sock.close()
 GetCategories(html)
+'''
